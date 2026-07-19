@@ -1,0 +1,40 @@
+{
+  "name": "sbis-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for Saby (SBIS) EDI — read-only JSON-RPC integration",
+  "license": "MIT",
+  "author": "Aleksandr Grebeshok",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "sbis-mcp": "dist/index.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "node --import tsx src/index.ts",
+    "test": "node --test test/**/*.test.mjs",
+    "test:run": "node --test test/**/*.test.mjs"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "sbis",
+    "saby",
+    "edo",
+    "эдо",
+    "llm",
+    "ai"
+  ],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.4.0"
+  }
+}
