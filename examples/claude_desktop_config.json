@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "sbis-mcp": {
+      "command": "npx",
+      "args": ["-y", "sbis-mcp"],
+      "env": {
+        "SBIS_LOGIN": "<ВАШ_ЛОГИН>",
+        "SBIS_PASSWORD": "<ВАШ_ПАРОЛЬ>",
+        "SBIS_BASE_URL": "https://online.sbis.ru"
+      }
+    }
+  }
+}
