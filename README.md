@@ -1,12 +1,16 @@
 # sbis-mcp
 
-> ⚠️ **Неофициальный проект.** Не аффилирован с ООО «Тензор» / Saby. Требуется ваш собственный аккаунт СБИС (Saby) с доступом к API. **v0.1 — только чтение.** КЭП и подписание документов не поддерживаются.
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
 
-> ⚠️ **Unofficial, third-party project.** Not affiliated with Tensor LLC / Saby. Requires your own Saby (SBIS) account with API access. **v0.1 is read-only.** Digital signatures (КЭП) are out of scope.
+**Read-only MCP server for Saby (СБИС) EDI** — list/read documents and counterparties via the official JSON-RPC API, so agents can see legally significant paperwork without copy-paste.
 
-MCP-сервер для чтения электронных документов Saby (СБИС) через JSON-RPC 2.0 API.
+> ⚠️ **Unofficial.** Not affiliated with Tensor LLC / Saby. Needs your own Saby account with API access.  
+> **v0.1 is read-only.** Digital signatures (КЭП) and write paths are out of scope until v0.2.
 
-## Инструменты v0.1 (read-only)
+> ⚠️ **Неофициальный.** Не аффилирован с ООО «Тензор» / Saby. Нужен свой аккаунт.  
+> **v0.1 — только чтение.** КЭП и запись — не в этом релизе.
+
+## Proof — seven tools (v0.1)
 
 | Tool | SBIS method |
 |------|-------------|
@@ -16,40 +20,34 @@ MCP-сервер для чтения электронных документов
 | `sbis_list_documents_by_event` | `СБИС.СписокДокументовПоСобытиям` |
 | `sbis_read_document` | `СБИС.ПрочитатьДокумент` |
 | `sbis_list_counterparties` | `СБИС.СписокКонтрагентов` |
-| `sbis_get_attachment` | GET по временной ссылке |
+| `sbis_get_attachment` | GET by temporary link |
 
-Запись (`ЗаписатьДокумент`, `ПодготовитьДействие` и др.) — **v0.2**, флаг `writable` (по умолчанию `false`).
+Writes (`ЗаписатьДокумент`, `ПодготовитьДействие`, …) stay off until v0.2 (`writable`, default `false`).
 
-## Быстрый старт
+## First use
 
-### Конфигурация
-
-**Через env (рекомендуется):**
+**Env (recommended):**
 
 ```bash
-export SBIS_LOGIN="<ВАШ_ЛОГИН>"
-export SBIS_PASSWORD="<ВАШ_ПАРОЛЬ>"
-# опционально:
-export SBIS_BASE_URL="https://online.sbis.ru"   # тест: https://fix-online.sbis.ru
-export SBIS_ACCOUNT="<НОМЕР_АККАУНТА>"
+export SBIS_LOGIN="<LOGIN>"
+export SBIS_PASSWORD="<PASSWORD>"
+# optional:
+export SBIS_BASE_URL="https://online.sbis.ru"   # test: https://fix-online.sbis.ru
+export SBIS_ACCOUNT="<ACCOUNT>"
 ```
 
-**Через файл** `~/.sbis-mcp/config.json`:
+**Or** `~/.sbis-mcp/config.json`:
 
 ```json
 {
-  "login": "<ВАШ_ЛОГИН>",
-  "password": "<ВАШ_ПАРОЛЬ>",
+  "login": "<LOGIN>",
+  "password": "<PASSWORD>",
   "baseUrl": "https://online.sbis.ru",
   "writable": false
 }
 ```
 
-### Claude Desktop
-
-См. [examples/claude_desktop_config.json](examples/claude_desktop_config.json).
-
-### Сборка и запуск
+Build & run (Node.js ≥ 18):
 
 ```bash
 npm install
@@ -57,42 +55,33 @@ npm run build
 npm start
 ```
 
-## Лимиты API (из документации Saby)
+Claude Desktop example: [examples/claude_desktop_config.json](examples/claude_desktop_config.json).
 
-- Аутентификация: ≤300 вызовов/мин с IP
-- Сессия `sid`: ~21 день (заголовок `X-SBISSessionID`)
-- Вложение: ≤73 МБ, до 10 вложений/документ
-- Временные ссылки на файлы: ~1 месяц
+## Limits (from Saby docs)
 
-Источник: [saby.ru/help/integration/api/techreq_edo](https://saby.ru/help/integration/api/techreq_edo)
+- Auth: ≤300 calls/min per IP  
+- Session `sid`: ~21 days (`X-SBISSessionID`)  
+- Attachment: ≤73 MB, up to 10 per document  
+- Temporary file links: ~1 month  
 
-## Документация API
+Source: [saby.ru tech requirements](https://saby.ru/help/integration/api/techreq_edo)
 
-- [Формат JSON-RPC](https://saby.ru/help/integration/api/all_methods/format)
-- [Аутентификация](https://saby.ru/help/integration/api/authentication)
-- [Документы](https://saby.ru/help/integration/api/documents)
-- [Контрагенты](https://saby.ru/help/integration/api/counterparty)
+API docs: [JSON-RPC format](https://saby.ru/help/integration/api/all_methods/format) · [auth](https://saby.ru/help/integration/api/authentication) · [documents](https://saby.ru/help/integration/api/documents) · [counterparties](https://saby.ru/help/integration/api/counterparty)
 
-## Live-smoke (вручную)
+## Live smoke & tests
 
-Скрипт `scripts/live-smoke.mjs` — **не в CI**, требует реальный аккаунт с тарифом «Обмен с контрагентами»:
+Live smoke is **manual** (real account + tariff «Обмен с контрагентами»):
 
 ```bash
 npm run build
-SBIS_LOGIN="<ВАШ_ЛОГИН>" SBIS_PASSWORD="<ВАШ_ПАРОЛЬ>" node scripts/live-smoke.mjs
+SBIS_LOGIN="…" SBIS_PASSWORD="…" node scripts/live-smoke.mjs
 ```
 
-## Тесты
+Unit tests mock RPC — no live account:
 
 ```bash
 npm test
 ```
-
-Тесты используют `setRpcClient()` и фикстуры из публичной документации — **без живого аккаунта**.
-
-## English
-
-**sbis-mcp** exposes seven read-only MCP tools over the official Saby (SBIS) EDI JSON-RPC API. Configure via `SBIS_LOGIN` / `SBIS_PASSWORD` or `~/.sbis-mcp/config.json`. Session id (`sid`) is kept in process memory only. Write operations are disabled until v0.2 (`writable: false`).
 
 ## License
 
